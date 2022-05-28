@@ -7,9 +7,10 @@
     });
 
     const max = 20;
+    let hi = 0;
 
-    loadFont('cubano', 'sprites/cubano.png', 147, 256, { chars: '0123456789HI:' });
-    loadSprite('background', 'sprites/bg.png');
+    loadFont('cubano', 'sprites/cubano.png', 147, 256, { chars: '1234567890HI:' });
+    loadSprite('background', 'sprites/background.png');
     loadSprite('title', 'sprites/title.png');
     loadSprite('start', 'sprites/start.png');
     loadSprite('shawalaballoon', 'sprites/shawalaballoon.png');
@@ -23,13 +24,12 @@
         'frog': {
             x: 0,
             y: 0,
-            width: 594,
-            height: 256,
-            sliceX: 3,
+            width: 436,
+            height: 222,
+            sliceX: 2,
             anims: {
                 'idle': 0,
                 'crouch': 1,
-                'jump': 2,
             }
         }
     });
@@ -62,19 +62,19 @@
         ]);
 
         add([
-            pos(width() / 1.8, height() / 2),
+            pos(center()),
             origin('center'),
-            text(`HI: ${getData('hi') || 0}`, { size: 128, font: 'cubano' }),
-            opacity(0.1),
-            layer('score'), 
+            text(`HI:${hi}`, { size: 128, font: 'cubano' }),
+            opacity(0.3),
+            layer('te'), 
         ])
 
         onUpdate(() => {
             // wavy stuff
             water.pos.y = wave(0, 16, time() * 4);
-            title.pos.y = wave(0, 20, time() * 4);
-            start.pos.y = wave(0, 20, time() * 4);
-            shawalaballoon.pos.y = wave(0, 20, time() * 4);
+            title.pos.y = wave(0, 20, time() * 50);
+            start.pos.y = wave(0, 15, time() * 2);
+            shawalaballoon.pos.y = wave(0, 15, time() * 2);
         });
 
         onKeyPress('space', () => {
@@ -87,26 +87,6 @@
     scene('game', () => {
         let logs = 0;
 
-        layers([
-            'score',
-            'inner',
-            'outer',
-            'log',
-            'water',
-            'text',
-            'text2',
-        ], 'game');
-
-        // starter log
-        add([
-            sprite('log'),
-            pos(width() + 97, 430),
-            area(),
-            move(LEFT, 150),
-            solid(),
-            cleanup(),
-        ]);
-
         // future logs
         loop(3.4, () => {
             add([
@@ -116,7 +96,7 @@
                 move(LEFT, 100),
                 solid(),
                 cleanup(),
-                layer('log'),
+                z(3),
             ]);
 
             logs++;
@@ -129,7 +109,7 @@
             area(),
             body(),
             scale(0.4),
-            cleanup(),
+            z(3),
             {
                 jump_force: 0,
                 direction: 'up',
@@ -160,9 +140,8 @@
         onKeyRelease('space', () => {
             if (frog.isGrounded()) {
                 frog.launched = true;
-                frog.play('jump');
-                frog.jump(frog.jump_force * 60);
                 frog.play('idle');
+                frog.jump(frog.jump_force * 60);
             }
         });
 
@@ -171,7 +150,7 @@
             sprite('bar_outline'),
             pos(width() - 1, 327),
             origin('bot'),
-            layer('outer'),
+            z(2),
         ]);
 
         const bar_fill = add([
@@ -179,49 +158,51 @@
             pos(width() - 1, 327),
             scale(1, 0),
             origin('bot'),
-            layer('inner'),
+            z(1),
         ]);
 
         const score = add([
             pos(width() / 1.8, height() / 4),
             origin('center'),
             text(logs, { size: 256, font: 'cubano' }),
-            opacity(0.1),
-            layer('score'),
+            opacity(0.3),
+            z(0),
         ]);
 
         // load water
         const water = add([
             sprite('water'),
             pos(0, 0),
-            layer('water'),
+            z(4),
         ]);
 
+        let once = true;
         onUpdate(() => {
             water.pos.y = wave(0, 20, time()*4); // wavy water
 
             // drowned
-            if (frog.pos.y > height() - 200) frog.dead = true;
+            if (frog.pos.y > height() - 200 || frog.pos.x < 0 || frog.pos.y > width()) frog.dead = true;
 
             // death screen
             if (frog.dead) {
-                let once = true;
                 if (once) {
                     add([
                         sprite('death_screen'),
                         pos(0, 0),
-                        layer('text'),
+                        z(5),
                     ]);
 
                     add([
                         sprite('retry_menu'),
                         pos(0, 0),
-                        layer('text2'),
+                        z(6),
                     ]);
 
-                    if (getData('hi') || 0 < logs) setData('hi', logs);
+                    if (hi < logs) hi = logs;
 
                     once = false;
+
+                    destroy(frog);
                 }
 
                 onKeyPress('space', () => {
@@ -236,10 +217,13 @@
             }
 
             // score
-            if (!frog.dead) score.text = logs;
+            if (!frog.dead) {
+                score.text = logs;
+                score.z = 0;
+            }
 
             // make jump move to right
-            if (!frog.isGrounded()) frog.move(frog.jump_force * 5, 0);
+            if (!frog.isGrounded()) frog.move(frog.jump_force * 2.5, 0);
 
             // reset
             if (frog.isGrounded() && frog.launched == true) {
@@ -249,8 +233,8 @@
             }
 
             // bar placement
-            bar_outline.pos.x = frog.pos.x - 32;
-            bar_outline.pos.y = frog.pos.y + 96;
+            bar_outline.pos.x = frog.pos.x - 22;
+            bar_outline.pos.y = frog.pos.y + 70;
             bar_fill.pos = bar_outline.pos;
             bar_fill.scale.y = frog.jump_force / max; // turns into decimals
         });
