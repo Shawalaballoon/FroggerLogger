@@ -1,3 +1,4 @@
+<link rel="icon" type="image/x-icon" href="/sprites/frog.png">
 <script type="module">
     import kaboom from "https://unpkg.com/kaboom/dist/kaboom.mjs";
     kaboom({
@@ -12,6 +13,7 @@
     loadFont('cubano', 'sprites/cubano.png', 147, 256, { chars: '1234567890HI:' });
     loadSound('jump', 'sfx/jump.wav');
     loadSound('land', 'sfx/land.wav');
+    loadSound('log', 'sfx/log.wav');
     loadSprite('background', 'sprites/background.png');
     loadSprite('title', 'sprites/title.png');
     loadSprite('start', 'sprites/start.png');
@@ -177,15 +179,17 @@
                     sprite('log'),
                     pos(width(), 430),
                     area(),
-                    move(LEFT, 100),
+                    move(LEFT, rand(100, 150)),
                     solid(),
                     cleanup(),
                     z(3),
                 ]);
 
+                play('log');
+
                 setTimeout(() => {
                     cooldown = false;
-                }, rand(3, 5) * 1000);
+                }, rand(2.7, 3.7) * 1000);
 
                 logs++;
                 cooldown = true;
@@ -230,7 +234,7 @@
                 score.z = 0;
             }
 
-            if (!frog.isGrounded()) frog.move(frog.jump_force * 2.5, 0); // make jump move to right
+            if (!frog.isGrounded()) frog.move(frog.jump_force * 2.7, 0); // make jump move to right
 
             // reset
             if (frog.isGrounded() && frog.launched == true) {
