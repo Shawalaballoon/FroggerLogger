@@ -80,7 +80,15 @@
             shawalaballoon.pos.y = wave(0, 15, time() * 2);
         });
 
+        // key
         onKeyPress('space', () => {
+            wait(0.2, () => {
+                go('game');
+            });
+        });
+
+        // touch
+        onTouchStart('space', () => {
             wait(0.2, () => {
                 go('game');
             });
@@ -239,6 +247,7 @@
                     destroy(frog);
                 }
 
+                // key
                 onKeyPress('space', () => {
                     wait(0.2, () => {
                         go('game');
@@ -246,6 +255,17 @@
                 });
 
                 onKeyPress('tab', () => {
+                    go('menu');
+                });
+
+                // touch
+                onTouchStart('space', () => {
+                    wait(0.2, () => {
+                        go('game');
+                    });
+                });
+
+                onTouchStart('tab', () => {
                     go('menu');
                 });
             }
