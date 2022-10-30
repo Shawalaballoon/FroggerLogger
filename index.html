@@ -178,7 +178,7 @@
             }
         });
 
-        onTouchEnd('space', () => {
+        onTouchEnd(() => {
             if (frog.isGrounded()) {
                 frog.launched = true;
                 frog.play('idle');
