@@ -11,6 +11,7 @@
     let hi = 0;
 
     loadFont('cubano', 'sprites/cubano.png', 147, 256, { chars: '1234567890HI:' });
+    loadSound('bleh', 'sfx/bleh.wav');
     loadSound('jump', 'sfx/jump.wav');
     loadSound('land', 'sfx/land.wav');
     loadSound('log', 'sfx/log.wav');
@@ -53,6 +54,7 @@
         const water = add([
             sprite('water'),
             pos(0, 0),
+            opacity(0.9),
         ]);
 
         const start = add([
@@ -66,17 +68,17 @@
         ]);
 
         add([
-            pos(center()),
+            pos(center().x + 30, center().y),
             origin('center'),
             text(`HI:${hi}`, { size: 128, font: 'cubano' }),
             opacity(0.3),
-            layer('te'), 
+            layer('te'),
         ])
 
         onUpdate(() => {
             // wavy stuff
             water.pos.y = wave(0, 16, time() * 4);
-            title.pos.y = wave(0, 20, time() * 50);
+            title.pos.y = wave(10, 20, time() * 3);
             start.pos.y = wave(0, 15, time() * 2);
             shawalaballoon.pos.y = wave(0, 15, time() * 2);
         });
@@ -164,6 +166,7 @@
         const water = add([
             sprite('water'),
             pos(0, 0),
+            opacity(0.9),
             z(4),
         ]);
 
@@ -171,7 +174,7 @@
         onUpdate(() => {
             water.pos.y = wave(0, 20, time()*4); // wavy water
 
-            if (frog.pos.y > height() - 200 || frog.pos.x < 0 || frog.pos.y > width()) frog.dead = true; // drowned
+            if (frog.pos.y > height() || frog.pos.x < 0 || frog.pos.y > width()) frog.dead = true; // drowned
 
             // log placement
             if (cooldown == false) {
@@ -185,7 +188,7 @@
                     z(3),
                 ]);
 
-                play('log');
+                if (frog.dead == false) play('log'); // play sound
 
                 setTimeout(() => {
                     cooldown = false;
@@ -215,6 +218,9 @@
                     once = false;
 
                     destroy(frog);
+                    destroy(bar_outline);
+                    destroy(bar_fill);
+                    play('bleh');
                 }
 
                 onKeyPress('space', () => {
