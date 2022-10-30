@@ -6,7 +6,7 @@
         background: [123, 217, 226],
     });
 
-    const cooldown = 0;
+    let cooldown = false;
     const max = 20;
     let hi = 0;
 
@@ -80,7 +80,6 @@
             shawalaballoon.pos.y = wave(0, 15, time() * 2);
         });
 
-        // key
         onKeyPress('space', () => {
             wait(0.2, () => {
                 go('game');
@@ -90,21 +89,6 @@
 
     scene('game', () => {
         let logs = 0;
-
-        // future logs
-        loop(3.4, () => {
-            add([
-                sprite('log'),
-                pos(width(), 430),
-                area(),
-                move(LEFT, 100),
-                solid(),
-                cleanup(),
-                z(3),
-            ]);
-
-            logs++;
-        });
 
         // frog
         const frog = add([
@@ -122,7 +106,6 @@
             }
         ]);
 
-        // key
         onKeyDown('space', () => {
             if (frog.isGrounded()) {
                 frog.play('crouch');
@@ -186,8 +169,27 @@
         onUpdate(() => {
             water.pos.y = wave(0, 20, time()*4); // wavy water
 
-            // drowned
-            if (frog.pos.y > height() - 200 || frog.pos.x < 0 || frog.pos.y > width()) frog.dead = true;
+            if (frog.pos.y > height() - 200 || frog.pos.x < 0 || frog.pos.y > width()) frog.dead = true; // drowned
+
+            // log placement
+            if (cooldown == false) {
+                add([
+                    sprite('log'),
+                    pos(width(), 430),
+                    area(),
+                    move(LEFT, 100),
+                    solid(),
+                    cleanup(),
+                    z(3),
+                ]);
+
+                setTimeout(() => {
+                    cooldown = false;
+                }, rand(2, 4.2) * 1000);
+
+                logs++;
+                cooldown = true;
+            }
 
             // death screen
             if (frog.dead) {
@@ -211,7 +213,6 @@
                     destroy(frog);
                 }
 
-                // key
                 onKeyPress('space', () => {
                     wait(0.2, () => {
                         go('game');
@@ -229,8 +230,7 @@
                 score.z = 0;
             }
 
-            // make jump move to right
-            if (!frog.isGrounded()) frog.move(frog.jump_force * 2.5, 0);
+            if (!frog.isGrounded()) frog.move(frog.jump_force * 2.5, 0); // make jump move to right
 
             // reset
             if (frog.isGrounded() && frog.launched == true) {
