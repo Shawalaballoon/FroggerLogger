@@ -86,13 +86,6 @@
                 go('game');
             });
         });
-
-        // touch
-        onTouchStart(() => {
-            wait(0.2, () => {
-                go('game');
-            });
-        });
     });
 
     scene('game', () => {
@@ -150,35 +143,6 @@
         });
 
         onKeyRelease('space', () => {
-            if (frog.isGrounded()) {
-                frog.launched = true;
-                frog.play('idle');
-                frog.jump(frog.jump_force * 60);
-                play('jump');
-            }
-        });
-
-        // touch
-        onTouchStart(() => {
-            if (frog.isGrounded()) {
-                frog.play('crouch');
-
-                // bar go up and down
-                if (frog.direction == 'up' &&  frog.jump_force < max) { // go up
-                    frog.jump_force += 1;
-                } else if (frog.direction == 'down' && frog.jump_force > 0) { // go down
-                    frog.jump_force -= 1;
-                } else if (frog.direction == 'down' && frog.jump_force == 0) { // switch to up
-                    frog.direction = 'up';
-                    frog.jump_force += 1;
-                } else if (frog.direction == 'up' && frog.jump_force == max) { // switch to down
-                    frog.direction = 'down';
-                    frog.jump_force -= 1;
-                }
-            }
-        });
-
-        onTouchEnd(() => {
             if (frog.isGrounded()) {
                 frog.launched = true;
                 frog.play('idle');
@@ -255,17 +219,6 @@
                 });
 
                 onKeyPress('tab', () => {
-                    go('menu');
-                });
-
-                // touch
-                onTouchStart(() => {
-                    wait(0.2, () => {
-                        go('game');
-                    });
-                });
-
-                onTouchMove(() => {
                     go('menu');
                 });
             }
