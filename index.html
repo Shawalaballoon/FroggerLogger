@@ -88,7 +88,7 @@
         });
 
         // touch
-        onTouchStart('space', () => {
+        onTouchStart(() => {
             wait(0.2, () => {
                 go('game');
             });
@@ -259,13 +259,13 @@
                 });
 
                 // touch
-                onTouchStart('space', () => {
+                onTouchStart(() => {
                     wait(0.2, () => {
                         go('game');
                     });
                 });
 
-                onTouchStart('tab', () => {
+                onTouchMove(() => {
                     go('menu');
                 });
             }
