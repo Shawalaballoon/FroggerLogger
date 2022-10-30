@@ -6,7 +6,6 @@
         background: [123, 217, 226],
     });
 
-    let cooldown = false;
     const max = 20;
     let hi = 0;
 
@@ -89,6 +88,7 @@
 
     scene('game', () => {
         let logs = 0;
+        let cooldown = false;
 
         // frog
         const frog = add([
@@ -185,7 +185,7 @@
 
                 setTimeout(() => {
                     cooldown = false;
-                }, rand(2, 4.2) * 1000);
+                }, rand(3, 5) * 1000);
 
                 logs++;
                 cooldown = true;
